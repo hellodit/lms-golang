@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/thedevsaddam/govalidator"
 	v1 "lms-github/domain/v1"
@@ -13,26 +14,47 @@ type userHandler struct {
 	userUsecase v1.UserUsecase
 }
 
-func NewUserHandler(e *echo.Echo, UserUsecase v1.UserUsecase){
+func NewUserHandler(e *echo.Echo, UserUsecase v1.UserUsecase) {
 	handler := &userHandler{userUsecase: UserUsecase}
 
 	user := e.Group("/user")
-	user.POST("/register",	handler.RegisterHandler)
-	user.POST("/login",	handler.LoginHandler)
-
-
+	user.GET("/:id", handler.GetByIDHandler)
+	user.POST("/register", handler.RegisterHandler)
+	user.POST("/login", handler.LoginHandler)
+	user.POST("/Update", handler.UpdateHandler)
 }
 
-func (u userHandler) RegisterHandler(e echo.Context) error  {
+func (u userHandler) UpdateHandler(e echo.Context) error {
+	panic("implement me")
+}
+
+func (u userHandler) GetByIDHandler(e echo.Context) error {
+	ctx := e.Request().Context()
+
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	id, err := uuid.Parse(e.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error()).SetInternal(err)
+	}
+	res, err := u.userUsecase.GetUserById(ctx, id)
+	return e.JSON(http.StatusOK, map[string]interface{}{
+		"status": "success",
+		"data":   res,
+	})
+}
+
+func (u userHandler) RegisterHandler(e echo.Context) error {
 	rules := govalidator.MapData{
-		"name" 		: []string{"required"},
-		"password"	: []string{"required"},
-		"email" 	: []string{"required"},
+		"name":     []string{"required"},
+		"password": []string{"required"},
+		"email":    []string{"required"},
 	}
 
 	validate := govalidator.Options{
 		Request: e.Request(),
-		Rules: rules,
+		Rules:   rules,
 	}
 
 	if err := govalidator.New(validate).Validate(); len(err) > 0 {
@@ -54,19 +76,19 @@ func (u userHandler) RegisterHandler(e echo.Context) error  {
 
 	return e.JSON(http.StatusOK, map[string]interface{}{
 		"status": "success",
-		"data": res,
+		"data":   res,
 	})
 }
 
-func (u userHandler) LoginHandler(e echo.Context) error  {
+func (u userHandler) LoginHandler(e echo.Context) error {
 	rules := govalidator.MapData{
-		"password"	: []string{"required"},
-		"email" 	: []string{"required"},
+		"password": []string{"required"},
+		"email":    []string{"required"},
 	}
 
 	validate := govalidator.Options{
 		Request: e.Request(),
-		Rules: rules,
+		Rules:   rules,
 	}
 
 	if err := govalidator.New(validate).Validate(); len(err) > 0 {
