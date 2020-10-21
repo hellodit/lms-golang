@@ -1,0 +1,20 @@
+# Server config
+app_name: "LMS-DESAMAJU"
+server:
+  host: 127.0.0.1
+  port: 1233
+  timeout:
+    server: 30
+    read: 15
+    write: 10
+    idle: 5
+
+database:
+  db_host: "127.0.0.1"
+  db_port: "5432"
+  db_user: "postgres"
+  db_password: ""
+  db_name: "lms-golang"
+  db_sslmode : "disable"
+
+JWT_SECRET: ""
