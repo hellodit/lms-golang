@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/thedevsaddam/govalidator"
 	v1 "lms-github/domain/v1"
+	"lms-github/middleware"
 	"net/http"
 )
 
@@ -18,10 +19,11 @@ func NewUserHandler(e *echo.Echo, UserUsecase v1.UserUsecase) {
 	handler := &userHandler{userUsecase: UserUsecase}
 
 	user := e.Group("/user")
-	user.GET("/:id", handler.GetByIDHandler)
+	customMiddleware := middleware.Init()
+	user.GET("/:id", handler.GetByIDHandler, customMiddleware.Auth)
 	user.POST("/register", handler.RegisterHandler)
 	user.POST("/login", handler.LoginHandler)
-	user.POST("/Update", handler.UpdateHandler)
+	user.POST("/update", handler.UpdateHandler)
 }
 
 func (u userHandler) UpdateHandler(e echo.Context) error {
