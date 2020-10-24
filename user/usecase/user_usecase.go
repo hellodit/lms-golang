@@ -16,6 +16,13 @@ type userUsecase struct {
 	ContextTimeout time.Duration
 }
 
+func NewUserUseCase(UserRepo v1.UserRepository, timeout time.Duration) v1.UserUsecase {
+	return userUsecase{
+		UserRepo:       UserRepo,
+		ContextTimeout: timeout,
+	}
+}
+
 func (u userUsecase) UpdateUser(ctx context.Context, usr *v1.User, form *http.Request) (res interface{}, err error) {
 	panic("implement me")
 }
@@ -84,11 +91,4 @@ func (u userUsecase) Login(ctx context.Context, credential *v1.Credential) (res 
 
 func (u userUsecase) Logout(ctx context.Context, claims jwt.Claims) {
 	panic("implement me")
-}
-
-func NewUserUseCase(UserRepo v1.UserRepository, timeout time.Duration) v1.UserUsecase {
-	return userUsecase{
-		UserRepo:       UserRepo,
-		ContextTimeout: timeout,
-	}
 }

@@ -41,6 +41,11 @@ func (u userHandler) GetByIDHandler(e echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error()).SetInternal(err)
 	}
 	res, err := u.userUsecase.GetUserById(ctx, id)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error()).SetInternal(err)
+	}
+
 	return e.JSON(http.StatusOK, map[string]interface{}{
 		"status": "success",
 		"data":   res,
