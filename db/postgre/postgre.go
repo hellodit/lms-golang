@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type dbLogger struct { }
+type dbLogger struct{}
 
 func (d dbLogger) BeforeQuery(c context.Context, q *pg.QueryEvent) (context.Context, error) {
 	return c, nil
@@ -19,7 +19,7 @@ func (d dbLogger) AfterQuery(c context.Context, q *pg.QueryEvent) error {
 	return nil
 }
 
-func Connect() *pg.DB{
+func Connect() *pg.DB {
 
 	dbHost := viper.GetString("database.db_host")
 	dbPort := viper.GetString("database.db_port")
@@ -28,7 +28,7 @@ func Connect() *pg.DB{
 	dbName := viper.GetString("database.db_name")
 	dbSslMode := viper.GetString("database.db_sslmode")
 
-	parse := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", dbUser, dbPass, dbHost, dbPort, dbName,dbSslMode)
+	parse := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", dbUser, dbPass, dbHost, dbPort, dbName, dbSslMode)
 	opt, err := pg.ParseURL(parse)
 
 	if err != nil {
@@ -39,6 +39,7 @@ func Connect() *pg.DB{
 
 	if db == nil {
 		logrus.Printf("Failed to connect database \n")
+		panic(db)
 	}
 
 	logrus.Printf("Success connected to DB \n")
