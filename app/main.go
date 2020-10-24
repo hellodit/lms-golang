@@ -9,8 +9,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
+
+	_courseHttpDelivery "lms-github/course/delivery/http"
 	_userHttpDelivery "lms-github/user/delivery/http"
+
+	_coursePostgresRepository "lms-github/course/repository/postgre"
 	_userPostgreRepository "lms-github/user/repository/postgre"
+
+	_courseUsecase "lms-github/course/usecase"
 	_userUsecase "lms-github/user/usecase"
 )
 
@@ -39,12 +45,15 @@ func main() {
 
 	//Call repositories
 	userRepo := _userPostgreRepository.NewPgsqlUserRepository(db)
+	courseRepo := _coursePostgresRepository.NewPgsqlCourseRepository(db)
 
 	//call usecase
 	useUsecae := _userUsecase.NewUserUseCase(userRepo, timeoutCtx)
+	courseUsecase := _courseUsecase.NewCourseUsecase(courseRepo, timeoutCtx)
 
 	//call delivery
 	_userHttpDelivery.NewUserHandler(e, useUsecae)
+	_courseHttpDelivery.NewCourseHandler(e, courseUsecase)
 
 	err := e.StartServer(server)
 	if err != nil {
